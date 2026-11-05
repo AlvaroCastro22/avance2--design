@@ -1,6 +1,6 @@
 import './style.css'
 
-const API_URL = 'https://backend-express-vercel-supabase.vercel.app/'
+const API_URL = 'https://backend-express-vercel-supabase.vercel.app'
 
 // Estructura del dashboard
 document.querySelector('#app').innerHTML = `
