@@ -112,15 +112,12 @@ document.querySelector('#app').innerHTML = `
 // Formatear fechas
 function formatDate(date) {
   if (!date) return 'Sin registro'
-
   return new Date(date).toLocaleString('es-PE')
 }
 
 // Cargar información del dashboard
 async function loadDashboard() {
-
   try {
-
     const [statusRes, devicesRes, measurementsRes, alertsRes] =
       await Promise.all([
         fetch(`${API_URL}/api/estado`),
@@ -133,25 +130,29 @@ async function loadDashboard() {
       throw new Error('Error al consultar la API')
     }
 
-    const [status, devices, measurements, alerts] = await Promise.all([
-      statusRes.json(),
-      devicesRes.json(),
-      measurementsRes.json(),
-      alertsRes.json()
-    ])
+    const statusData = await statusRes.json()
+    const devicesData = await devicesRes.json()
+    const measurementsData = await measurementsRes.json()
+    const alertsData = await alertsRes.json()
+
+    // Extraer los arrays reales desde la propiedad .data de la API
+    const devices = devicesData.data || []
+    const measurements = measurementsData.data || []
+    const alerts = alertsData.data || []
 
     // =========================
     // RESUMEN
     // =========================
 
     document.querySelector('#devicesCount').textContent =
-      status.devices ?? devices.length
+      statusData.devices ?? devices.length
 
     document.querySelector('#measurementsCount').textContent =
-      status.measurements ?? measurements.length
+      statusData.measurements ?? measurements.length
 
+    // Cambiado de activeAlerts a active_alerts (como lo manda tu backend)
     document.querySelector('#alertsCount').textContent =
-      status.activeAlerts ?? alerts.length
+      statusData.active_alerts ?? alerts.length
 
     // =========================
     // DISPOSITIVOS
@@ -236,7 +237,6 @@ async function loadDashboard() {
       `
 
   } catch (error) {
-
     console.error('Error:', error)
 
     document.querySelector('#devicesTable').innerHTML = `
@@ -254,9 +254,7 @@ async function loadDashboard() {
     document.querySelector('#alertsList').innerHTML = `
       <p>Error al cargar alertas.</p>
     `
-
   }
-
 }
 
 // Botón actualizar
